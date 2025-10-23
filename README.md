@@ -1,2 +1,2 @@
 # testnik
-Плагин для Lampac с поддержкой cinema.js".
+Плагин для Lampac с поддержкой .js".
