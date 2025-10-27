@@ -1,38 +1,4 @@
-(function() {
-  'use strict';
 
-  var Defined = {
-    api: 'lampac',
-    localhost: 'http://192.168.31.164:9118/',
-    apn: ''
-  };
-
-  var balansers_with_search;
-  
-  var unic_id = Lampa.Storage.get('lampac_unic_id', '');
-  if (!unic_id) {
-    unic_id = Lampa.Utils.uid(8).toLowerCase();
-    Lampa.Storage.set('lampac_unic_id', unic_id);
-  }
-  
-    
-  function getAndroidVersion() {
-    if (Lampa.Platform.is('android')) {
-      try {
-        var current = AndroidJS.appVersion().split('-');
-        return parseInt(current.pop());
-      } catch (e) {
-        return 0;
-      }
-    } else {
-      return 0;
-    }
-  }
-
-  var hostkey = 'http://192.168.31.164:9118'.replace('http://', '').replace('https://', '');
-
-  if (!window.rch_nws || !window.rch_nws[hostkey]) {
-    if (!window.rch_nws) window.rch_nws = {};
 
     window.rch_nws[hostkey] = {
       type: undefined,
@@ -131,129 +97,7 @@
 
             } else {
               client.invoke("RchResult", rchId, html);
-            }
-          }
-
-          if (url == 'eval') {
-            console.log('RCH', url, data);
-            result(eval(data));
-          } else if (url == 'ping') {
-            result('pong');
-          } else {
-            console.log('RCH', url);
-            network["native"](url, result, function () {
-              console.log('RCH', 'result empty');
-              result('');
-            }, data, {
-              dataType: 'text',
-              timeout: 1000 * 8,
-              headers: headers,
-              returnHeaders: returnHeaders
-            });
-          }
-        });
-
-        client.on('Connected', function (connectionId) {
-          console.log('RCH', 'ConnectionId: ' + connectionId);
-        });
-        client.on('Closed', function () {
-          console.log('RCH', 'Connection closed');
-        });
-        client.on('Error', function (err) {
-          console.log('RCH', 'error:', err); 
-        });
-      });
-    };
-  }
-
-  window.rch_nws[hostkey].typeInvoke('http://192.168.31.164:9118', function() {});
-
-  function rchInvoke(json, call) {
-    if (window.nwsClient && window.nwsClient[hostkey] && window.nwsClient[hostkey]._shouldReconnect) return;	
-    if (!window.nwsClient) window.nwsClient = {};
-    if (window.nwsClient[hostkey] && window.nwsClient[hostkey].socket)
-      window.nwsClient[hostkey].socket.close();
-    window.nwsClient[hostkey] = new NativeWsClient(json.nws, {
-      autoReconnect: false
-    });
-    window.nwsClient[hostkey].on('Connected', function(connectionId) {
-      window.rch_nws[hostkey].Registry(window.nwsClient[hostkey], function() {
-        call();
-      });
-    });
-    window.nwsClient[hostkey].connect();
-  }
-
-  function rchRun(json, call) {
-    if (typeof NativeWsClient == 'undefined') {
-      Lampa.Utils.putScript(["http://192.168.31.164:9118/js/nws-client-es5.js"], function() {}, false, function() {
-        rchInvoke(json, call);
-      }, true);
-    } else {
-      rchInvoke(json, call);
-    }
-  }
-
-  function account(url) {
-    url = url + '';
-    if (url.indexOf('account_email=') == -1) {
-      var email = Lampa.Storage.get('account_email');
-      if (email) url = Lampa.Utils.addUrlComponent(url, 'account_email=' + encodeURIComponent(email));
-    }
-    if (url.indexOf('uid=') == -1) {
-      var uid = Lampa.Storage.get('lampac_unic_id', '');
-      if (uid) url = Lampa.Utils.addUrlComponent(url, 'uid=' + encodeURIComponent(uid));
-    }
-    if (url.indexOf('token=') == -1) {
-      var token = '';
-      if (token != '') url = Lampa.Utils.addUrlComponent(url, 'token=');
-    }
-    return url;
-  }
-  
-  var Network = Lampa.Reguest;
-
-  function component(object) {
-    var network = new Network();
-    var scroll = new Lampa.Scroll({
-      mask: true,
-      over: true
-    });
-    var files = new Lampa.Explorer(object);
-    var filter = new Lampa.Filter(object);
-    var sources = {};
-    var last;
-    var source;
-    var balanser;
-    var initialized;
-    var balanser_timer;
-    var images = [];
-    var number_of_requests = 0;
-    var number_of_requests_timer;
-    var life_wait_times = 0;
-    var life_wait_timer;
-    var filter_sources = {};
-    var filter_translate = {
-      season: Lampa.Lang.translate('torrent_serial_season'),
-      voice: Lampa.Lang.translate('torrent_parser_voice'),
-      source: Lampa.Lang.translate('settings_rest_source')
-    };
-    var filter_find = {
-      season: [],
-      voice: []
-    };
-	
-    if (balansers_with_search == undefined) {
-      network.timeout(10000);
-      network.silent(account('http://192.168.31.164:9118/lite/withsearch'), function(json) {
-        balansers_with_search = json;
-      }, function() {
-		  balansers_with_search = [];
-	  });
-    }
-	
-    function balanserName(j) {
-      var bals = j.balanser;
+ 
       var name = j.name.split(' ')[0];
       return (bals || name).toLowerCase();
     }
@@ -778,6 +622,7 @@ else if (element.url) {
       Noty.show('Внешний плеер можно указать в init.conf (playerInner)', {time: 3000});
     Player.play(element);
   }
+
 }
                 Lampa.Player.play(element);
                 Lampa.Player.playlist(playlist);
